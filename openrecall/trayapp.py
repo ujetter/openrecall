@@ -19,8 +19,10 @@ def create_system_tray_icon():
         pystray.MenuItem("openrecall Website", 
                         after_click),
         pystray.MenuItem("openrecall homepage", 
-                        after_click),
-        #pystray.MenuItem("Exit", after_click)))
+                        after_click)
+        #,pystray.MenuItem("Exit", after_click)
+        ))
+                        
     return icon
  
  
