@@ -10,8 +10,8 @@ def after_click(icon, query):
     elif str(query) == "openrecall homepage":
         webbrowser.open('https://github.com/openrecall/openrecall',new=2, autoraise=True)
         # icon.stop()
-    #elif str(query) == "Exit":
-    #    icon.stop()
+    elif str(query) == "Exit":
+       icon.stop()
  
 def create_system_tray_icon(): 
     icon = pystray.Icon("GFG", image, "openrecall is recording....", 
@@ -20,7 +20,7 @@ def create_system_tray_icon():
                         after_click),
         pystray.MenuItem("openrecall homepage", 
                         after_click)
-        #,pystray.MenuItem("Exit", after_click)
+        ,pystray.MenuItem("Exit", after_click)
         ))
                         
     return icon
