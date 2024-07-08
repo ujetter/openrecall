@@ -1,6 +1,6 @@
 import pytest, sys
 from unittest import mock
-from openrecall.config import get_appdata_folder, screenshots_path, db_path
+from openrecall.config import get_appdata_folder, screenshots_path, db_path, check_python_version
 
 def test_get_appdata_folder_windows(tmp_path):
     with mock.patch('sys.platform', 'win32'):
