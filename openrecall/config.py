@@ -12,7 +12,8 @@ Returns:
     get_appdata_folder: Function to get appdata folder
     check_python_version: check the python version and exit if wrong version is used
 """
-import os, sys
+import os
+import sys
 import argparse
 import logging
 from openrecall.log_config import set_logging_level
@@ -88,30 +89,35 @@ else:
 if not os.path.exists(screenshots_path):
     try:
         os.makedirs(screenshots_path)
-    except:
+    except OSError:
         pass
 
-def check_python_version(version=sys.version[:sys.version.find(".",2)]):
+
+def check_python_version(version=sys.version[:sys.version.find(".", 2)]):
     """
     check_python_version: Stop execution if wrong python version is used
     , warning if old version is used.
     """
     def make_version_set(vinfo):
-        return tuple(map(int, vinfo.split(".")))
-    filepath=os.path.join(os.path.dirname(__file__),"..",".python-version")
-    with open (filepath,"r") as f:
-        vinfo=f.readline().strip()
-    (major,minor) = make_version_set(vinfo)
-    (vmajor,vminor) = make_version_set(version)
-    if (major,minor) < (vmajor,vminor):
-        print ("ERROR: using wrong python version:",version,"please use python ",vinfo)
+        return tuple(map(int, vinfo.split(".")))  # pylint: disable= bad-builtin
+    filepath = os.path.join(os.path.dirname(__file__), "..", ".python-version")
+    with open(filepath, "r", encoding="utf-8") as f:
+        vinfo = f.readline().strip()
+    (major, minor) = make_version_set(vinfo)
+    (vmajor, vminor) = make_version_set(version)
+    logging.info(
+        f"Python Version is:{major}.{minor} checking agoinst {vmajor}.{vminor}")
+    if (major, minor) < (vmajor, vminor):
+        print("ERROR: using wrong python version:",
+              version, "please use python ", vinfo)
         sys.exit()
-    if (major,minor) > (vmajor,vminor):
-        print ("WARNING: using older python version:",version,"please use python ",vinfo)
+    if (major, minor) > (vmajor, vminor):
+        print("WARNING: using older python version:",
+              version, "please use python ", vinfo)
 
-check_python_version()    
+
+check_python_version()
 
 print(args.debug)
 set_logging_level(args.debug)
 logger.debug("config loaded")
-

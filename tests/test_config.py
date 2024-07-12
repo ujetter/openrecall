@@ -1,6 +1,7 @@
-import pytest, sys
 from unittest import mock
+import pytest
 from openrecall.config import get_appdata_folder, screenshots_path, db_path, check_python_version
+
 
 def test_get_appdata_folder_windows(tmp_path):
     with mock.patch('sys.platform', 'win32'):
@@ -9,11 +10,13 @@ def test_get_appdata_folder_windows(tmp_path):
             assert get_appdata_folder() == str(expected_path)
             assert expected_path.exists()
 
+
 def test_get_appdata_folder_windows_no_appdata():
     with mock.patch('sys.platform', 'win32'):
         with mock.patch.dict('os.environ', {}, clear=True):
             with pytest.raises(EnvironmentError, match="APPDATA environment variable is not set."):
                 get_appdata_folder()
+
 
 def test_get_appdata_folder_darwin(tmp_path):
     with mock.patch('sys.platform', 'darwin'):
@@ -22,6 +25,7 @@ def test_get_appdata_folder_darwin(tmp_path):
             assert get_appdata_folder() == str(expected_path)
             assert expected_path.exists()
 
+
 def test_get_appdata_folder_linux(tmp_path):
     with mock.patch('sys.platform', 'linux'):
         with mock.patch('os.path.expanduser', return_value=str(tmp_path)):
@@ -29,17 +33,21 @@ def test_get_appdata_folder_linux(tmp_path):
             assert get_appdata_folder() == str(expected_path)
             assert expected_path.exists()
 
+
 def test_check_python_version():
-    with pytest.raises(SystemExit) :
+    with pytest.raises(SystemExit):
         check_python_version(version="3.12")
     check_python_version("3.11")
     check_python_version(version="3.9")
-   
-#Test if database exists
-def test_if_database_exists (tmp_path):
+    check_python_version()
+
+# Test if database exists
+
+
+def test_if_database_exists(tmp_path):
     assert (tmp_path / db_path).exists()
-#Test if screenshot file exists
+# Test if screenshot file exists
 
-def test_if_screenshot_path_exists (tmp_path):
+
+def test_if_screenshot_path_exists(tmp_path):
     assert (tmp_path / screenshots_path).exists()
-
