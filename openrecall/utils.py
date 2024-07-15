@@ -155,3 +155,8 @@ def is_user_active():
         return True
     else:
         raise NotImplementedError("This platform is not supported")
+
+
+def read_file_to_string(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()
