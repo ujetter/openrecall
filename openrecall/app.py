@@ -83,11 +83,12 @@ if __name__ == "__main__":
 
     log_always("Screenshot thread started, pid=", t.native_id)
     app.run(port=8082)
+    log_always("Shutting down the server threads...")
     # App was terminated, shutting down the threads
-    logging.info("Stopping tray icon")
+    logging.info("...Stop tray icon")
     tray_icon.stop()
-    logging.info("Stop the Screenshot thread")
+    logging.info("...Stop the Screenshot thread")
     stop_event.set()
-    logging.info("Wait for the Screenshot thread to terminate")
+    logging.info("Wait for the threads to terminate")
     t.join()
-    log_always("Server & Screenshots stopped")
+    log_always("Server & Screenshots stopped correctly.")
