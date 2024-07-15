@@ -1,6 +1,8 @@
 import webbrowser
 import pystray
 from PIL import Image
+import logging
+logger = logging.getLogger(__name__)
 
 image = Image.open("./images/caret-right-square-fill.png", "r")
 

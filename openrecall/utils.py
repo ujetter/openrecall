@@ -1,7 +1,10 @@
 import sys
+import logging
+logger = logging.getLogger(__name__)
+
 
 def human_readable_time(timestamp):
-    import datetime
+    import datetime  # pylint: disable=import-outside-toplevel
 
     now = datetime.datetime.now()
     dt_object = datetime.datetime.fromtimestamp(timestamp)
@@ -17,7 +20,7 @@ def human_readable_time(timestamp):
 
 
 def timestamp_to_human_readable(timestamp):
-    import datetime
+    import datetime  # pylint: disable=import-outside-toplevel
 
     try:
         dt_object = datetime.datetime.fromtimestamp(timestamp)
@@ -27,7 +30,7 @@ def timestamp_to_human_readable(timestamp):
 
 
 def get_active_app_name_osx():
-    from AppKit import NSWorkspace
+    from AppKit import NSWorkspace  # pylint: disable=import-outside-toplevel
 
     try:
         active_app = NSWorkspace.sharedWorkspace().activeApplication()
@@ -35,7 +38,9 @@ def get_active_app_name_osx():
     except:
         return ""
 
+
 def get_active_window_title_osx():
+    # pylint: disable=import-outside-toplevel
     from Quartz import (
         CGWindowListCopyWindowInfo,
         kCGNullWindowID,
@@ -56,9 +61,9 @@ def get_active_window_title_osx():
 
 
 def get_active_app_name_windows():
-    import psutil
-    import win32gui
-    import win32process
+    import psutil  # pylint: disable=import-outside-toplevel
+    import win32gui  # pylint: disable=import-outside-toplevel
+    import win32process  # pylint: disable=import-outside-toplevel
 
     try:
         hwnd = win32gui.GetForegroundWindow()
@@ -70,7 +75,7 @@ def get_active_app_name_windows():
 
 
 def get_active_window_title_windows():
-    import win32gui
+    import win32gui  # pylint: disable=import-outside-toplevel
 
     try:
         hwnd = win32gui.GetForegroundWindow()
@@ -85,6 +90,7 @@ def get_active_app_name_linux():
 
 def get_active_window_title_linux():
     return ''
+
 
 def get_active_app_name():
     if sys.platform == "win32":
@@ -107,28 +113,30 @@ def get_active_window_title():
     else:
         raise NotImplementedError("This platform is not supported")
 
+
 def is_user_active_osx():
     import subprocess
 
     try:
         # Run the 'ioreg' command to get idle time information
-        output = subprocess.check_output(["ioreg", "-c", "IOHIDSystem"]).decode()
-        
+        output = subprocess.check_output(
+            ["ioreg", "-c", "IOHIDSystem"]).decode()
+
         # Find the line containing "HIDIdleTime"
         for line in output.split('\n'):
             if "HIDIdleTime" in line:
                 # Extract the idle time value
                 idle_time = int(line.split('=')[-1].strip())
-                
+
                 # Convert idle time from nanoseconds to seconds
                 idle_seconds = idle_time / 1000000000
-                
+
                 # If idle time is less than 5 seconds, consider the user not idle
                 return idle_seconds < 5
-        
+
         # If "HIDIdleTime" is not found, assume the user is not idle
         return True
-    
+
     except subprocess.CalledProcessError:
         # If there's an error running the command, assume the user is not idle
         return True
@@ -136,6 +144,7 @@ def is_user_active_osx():
         print(f"An error occurred: {e}")
         # If there's any other error, assume the user is not idle
         return True
+
 
 def is_user_active():
     if sys.platform == "win32":
@@ -146,4 +155,3 @@ def is_user_active():
         return True
     else:
         raise NotImplementedError("This platform is not supported")
-    

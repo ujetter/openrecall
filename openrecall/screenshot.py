@@ -11,6 +11,8 @@ from openrecall.database import insert_entry
 from openrecall.nlp import get_embedding
 from openrecall.ocr import extract_text_from_image
 from openrecall.utils import get_active_app_name, get_active_window_title, is_user_active
+import logging
+logger = logging.getLogger(__name__)
 
 
 def mean_structured_similarity_index(img1, img2, L=255):
@@ -46,12 +48,12 @@ def take_screenshots(monitor_number=1):
 
             if args.primary_monitor_only and monitor_number != 1:
                 continue
-            
+
             monitor_device = sct.monitors[monitor_number]
             screenshot = np.array(sct.grab(monitor_device))
             screenshot = screenshot[:, :, [2, 1, 0]]
             screenshots.append(screenshot)
-    
+
     return screenshots
 
 
@@ -61,15 +63,15 @@ def record_screenshots_thread(stop_event):
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     last_screenshots = take_screenshots()
-    while not stop_event.is_set() :
+    while not stop_event.is_set():
         if not is_user_active():
             time.sleep(3)
             continue
-    
+
         screenshots = take_screenshots()
-    
+
         for i, screenshot in enumerate(screenshots):
-            
+
             last_screenshot = last_screenshots[i]
 
             if not is_similar(screenshot, last_screenshot):
@@ -88,6 +90,6 @@ def record_screenshots_thread(stop_event):
                 insert_entry(
                     text, timestamp, embedding, active_app_name, active_window_title
                 )
-                
+
         time.sleep(3)
-    print ("Screenshot thread terminated.")
+    print("Screenshot thread terminated.")

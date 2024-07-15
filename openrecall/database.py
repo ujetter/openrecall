@@ -1,10 +1,11 @@
 import sqlite3
 from collections import namedtuple
 from typing import Any, List
-
+import logging
 from openrecall.config import db_path
-
-Entry = namedtuple("Entry", ["id", "app", "title", "text", "timestamp", "embedding"])
+logger = logging.getLogger(__name__)
+Entry = namedtuple("Entry", ["id", "app", "title",
+                   "text", "timestamp", "embedding"])
 
 
 def create_db() -> None:

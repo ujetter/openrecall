@@ -1,5 +1,7 @@
-import numpy as np
 from sentence_transformers import SentenceTransformer
+import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_embedding(text):

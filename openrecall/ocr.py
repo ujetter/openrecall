@@ -1,4 +1,6 @@
 from doctr.models import ocr_predictor
+import logging
+logger = logging.getLogger(__name__)
 
 ocr = ocr_predictor(
     pretrained=True,
