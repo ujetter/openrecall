@@ -93,3 +93,42 @@ def record_screenshots_thread(stop_event):
 
         time.sleep(3)
     print("Screenshot thread terminated.")
+
+
+def record_screenshots_process():
+    # TODO: fix the error from huggingface tokenizers
+    import os
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    logging.info("screenshot process started")
+
+    last_screenshots = take_screenshots()
+    while True:
+        if not is_user_active():
+            time.sleep(3)
+            continue
+
+        screenshots = take_screenshots()
+
+        for i, screenshot in enumerate(screenshots):
+
+            last_screenshot = last_screenshots[i]
+
+            if not is_similar(screenshot, last_screenshot):
+                last_screenshots[i] = screenshot
+                image = Image.fromarray(screenshot)
+                timestamp = int(time.time())
+                image.save(
+                    os.path.join(screenshots_path, f"{timestamp}.webp"),
+                    format="webp",
+                    lossless=True,
+                )
+                text = extract_text_from_image(screenshot)
+                embedding = get_embedding(text)
+                active_app_name = get_active_app_name()
+                active_window_title = get_active_window_title()
+                insert_entry(
+                    text, timestamp, embedding, active_app_name, active_window_title
+                )
+
+        time.sleep(3)
+    print("Screenshot thread terminated.")
