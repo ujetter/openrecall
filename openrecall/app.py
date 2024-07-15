@@ -72,13 +72,6 @@ def search():
     )
 
 
-''' try to serve static as static
-@app.route("/static/<filename>")
-def serve_image(filename):
-    return send_from_directory(screenshots_path, filename)
-'''
-
-
 def run_as_threads():
     stop_event = Event()
     t = Thread(target=record_screenshots_thread, args=(stop_event,))
