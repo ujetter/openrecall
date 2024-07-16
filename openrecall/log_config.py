@@ -4,7 +4,8 @@ from logging.handlers import RotatingFileHandler
 
 def setup_logging(log_file='openrecall.log', max_bytes=10000, backup_count=0):
     # Configure the root logger
-    logger = logging.getLogger()
+    # logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
     # Create a file handler

@@ -11,6 +11,7 @@ from openrecall.database import insert_entry
 from openrecall.nlp import get_embedding
 from openrecall.ocr import extract_text_from_image
 from openrecall.utils import get_active_app_name, get_active_window_title, is_user_active
+from openrecall.log_config import log_always
 import logging
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ def record_screenshots_process():
     # TODO: fix the error from huggingface tokenizers
     import os
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    logging.info("screenshot process started")
+    log_always("screenshot process started")
 
     last_screenshots = take_screenshots()
     while True:
