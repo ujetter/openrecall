@@ -3,11 +3,15 @@ from collections import namedtuple
 from typing import Any, List
 import logging
 from openrecall.config import db_path
+from openrecall.utils import timeit_decorator
 logger = logging.getLogger(__name__)
+logger.debug(f"initializing {__name__}")
+
 Entry = namedtuple("Entry", ["id", "app", "title",
                    "text", "timestamp", "embedding"])
 
 
+@timeit_decorator
 def create_db() -> None:
     with sqlite3.connect(db_path) as conn:
         c = conn.cursor()
@@ -18,6 +22,7 @@ def create_db() -> None:
         conn.commit()
 
 
+@timeit_decorator
 def get_all_entries() -> List[Entry]:
     with sqlite3.connect(db_path) as conn:
         c = conn.cursor()
@@ -25,6 +30,7 @@ def get_all_entries() -> List[Entry]:
         return [Entry(*result) for result in results]
 
 
+@timeit_decorator
 def get_timestamps() -> List[int]:
     with sqlite3.connect(db_path) as conn:
         c = conn.cursor()
@@ -34,6 +40,7 @@ def get_timestamps() -> List[int]:
         return [result[0] for result in results]
 
 
+@timeit_decorator
 def insert_entry(
     text: str, timestamp: int, embedding: Any, app: str, title: str
 ) -> None:

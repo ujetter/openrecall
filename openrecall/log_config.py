@@ -1,46 +1,76 @@
 import logging
 from logging.handlers import RotatingFileHandler
 import logging.config
-import json
 import os
+import multiprocessing
 
 import logging
 import logging.config
 import yaml
+if not logging.root.hasHandlers():
+    logging.config.dictConfig(
+        yaml.safe_load(open(os.path.dirname(__file__)+'/log_config.yaml', 'r')))
+    if (multiprocessing.current_process().name == "MainProcess"):
+        logging.info(f"------------------------------------------------------")
+        logging.info(f"------------------ NEW APPLICATION START -------------")
+        logging.info(f"------------------------------------------------------")
+    else:
+        logging.info(
+            f"launching new process{multiprocessing.current_process().name}")
 
-_log_already_initialized = False
+
+def add_custom_log_level(level_name, level_num):
+    """
+    Adds a custom log level to the logging module.
+
+    :param level_name: The name of the custom log level.
+    :param level_num: The integer value of the custom log level.
+    """
+    # Add the custom log level to the logging module
+    setattr(logging, level_name, level_num)
+    logging.addLevelName(level_num, level_name)
+
+    # Add a method to the Logger class to log messages at the new level
+    def log_for_level(self, message, *args, **kwargs):
+        if self.isEnabledFor(level_num):
+            self.log(level_num, message, *args, **kwargs)
+    setattr(logging.Logger, level_name.lower(), log_for_level)
+
+    # Add a convenience function to the logging module for the custom level
+    def log_to_root(message, *args, **kwargs):
+        logging.log(level_num, message, *args, **kwargs)
+    setattr(logging, level_name.lower(), log_to_root)
 
 
 def setup_logging_new():
     # Load the logging configuration from the .yaml file
-    STATUS_LEVEL_NUM = 100
-    logging.STATUS = STATUS_LEVEL_NUM
-    logging.addLevelName(STATUS_LEVEL_NUM, "STATUS")
-
-    # Add a method to the Logger class to log messages at the new level
-    def status(self, message, *args, **kws):
-        if self.isEnabledFor(STATUS_LEVEL_NUM):
-            self.log(STATUS_LEVEL_NUM, message, *args, **kws)
-    logging.Logger.status = status
-
-    def status2(message, *args, **kws):
-        logging.log(STATUS_LEVEL_NUM, message, *args, **kws)
-    logging.status = status2
-    logging.status("setup_logging")
-    with open(os.path.dirname(__file__)+'/log_config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
-        logging.config.dictConfig(config)
-    logging.log(200, "config read")
+    logging.info("prepare logging.TRACE")
+    add_custom_log_level("TRACE", 5)
+    logging.debug("Trace is defined")
+    add_custom_log_level("STATUS", 100)
+    logging.debug("Status is defined")
+    add_custom_log_level("TIMER", 15)
+    logging.debug("TIMER is defined")
+    logging.debug("Logging setup successfull.")
+    l2 = logging.getLogger(__name__)
+    if l2.getEffectiveLevel() <= logging.DEBUG and False:
+        oldlevel = l2.getEffectiveLevel()
+        l2.setLevel(logging.NOTSET)
+        l2.debug("Testing new logging levels")
+        logging.trace("Trace Test")
+        logging.status("Status Test")
+        logging.timer("Timer Test")
+        l2.trace("Trace Test")
+        l2.status("Status Test")
+        l2.timer("Timer Test")
+        l2.setLevel(oldlevel)
 
     # Create a logger for your application
 
 
-if not _log_already_initialized:
-    logging.critical(f"Info---{_log_already_initialized}")
-    setup_logging_new()
-    _log_already_initialized = True
+setup_logging_new()
 logger = logging.getLogger(__name__)
-logging.status(__name__)
+logger.debug(f"initializing: {__name__}")
 
 
 def setup_logging(log_file='openrecall.log', max_bytes=10000, backup_count=0):
@@ -109,13 +139,15 @@ def set_logging_level(loglevel):
         root_logger = logging.getLogger()
         old_level = root_logger.getEffectiveLevel()
         root_logger.setLevel(mp[loglevel])
-        log_always("set DEBUGLEVEL=", logging.getLevelName(logging.getLevelName(
-            loglevel)), "from", logging.getLevelName(old_level))
+        logger.status("set DEBUGLEVEL=" + logging.getLevelName(logging.getLevelName(
+            loglevel)) + " from " + logging.getLevelName(old_level))
     else:
-        logging.error(f"Debug level not known: {loglevel}")
+        logger.warning(f"--debug parameter level not known: {loglevel}")
         # pylint: disable=logging-not-lazy
-        logging.error("use one of: "+" ".join(mp.keys())
-                      )
+        logger.warning("use one of: "+" ".join(mp.keys()))
+        oldlevel = logging.getLevelName(
+            logging.getLogger().getEffectiveLevel())
+        logger.warning(f"contine with logging level={oldlevel}")
 
 
 def show_registered_loggers():

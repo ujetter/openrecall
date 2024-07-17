@@ -11,14 +11,14 @@ handlers:
   # console
   console:
     class: logging.StreamHandler
-    level: DEBUG
+    level: WARNING
     formatter: simple
     stream: ext://sys.stdout
   # logfile for the applocation: app_logfile.log
   rotatingFileHandler:
     class: logging.handlers.RotatingFileHandler
     formatter: simple
-    level: DEBUG
+    level: NOTSET
     filename: app_openrecall.log
     mode: 'a'
     maxBytes: 10485760 # 10MB
@@ -27,7 +27,7 @@ handlers:
   rotatingThreadHandler:
     class: logging.handlers.RotatingFileHandler
     formatter: threadFormat
-    level: DEBUG
+    level: NOTSET
     filename: app_openrecall.log
     mode: 'a'
     maxBytes: 10485760 # 10MB
@@ -36,7 +36,7 @@ handlers:
   rotatingProcessHandler:
     class: logging.handlers.RotatingFileHandler
     formatter: processFormat
-    level: DEBUG
+    level: NOTSET
     filename: app_openrecall.log
     mode: 'a'
     maxBytes: 10485760 # 10MB
@@ -46,7 +46,7 @@ handlers:
   combinedFileHandler:
     class: logging.handlers.RotatingFileHandler
     formatter: simple
-    level: DEBUG
+    level: NOTSET
     filename: app_combined.log
     mode: 'a'
     maxBytes: 10485760 # 10MB
@@ -56,7 +56,7 @@ handlers:
   webFileHandler:
     class: logging.handlers.RotatingFileHandler
     formatter: simple
-    level: DEBUG
+    level: NOTSET
     filename: app_web.log
     mode: 'a'
     maxBytes: 10485760 # 10MB
@@ -88,13 +88,36 @@ loggers:
     handlers: [console]
     propagate: no
   root:
-    level: STATUS
+    level: NOTSET
     handlers: [console,combinedFileHandler, rotatingProcessHandler]
     propagate: no
-  app:
+  __mp_main__:
     level: DEBUG
     handlers: [rotatingProcessHandler,combinedFileHandler]
     propagate: no
+  app: &default_app_settings
+    level: NOTSET
+    handlers: [console,rotatingProcessHandler,combinedFileHandler]
+    propagate: no
+  __main__:
+    <<: *default_app_settings
+  # app libraries:
+  openrecall.log_config:
+    <<: *default_app_settings
+  openrecall.config:
+    <<: *default_app_settings
+  openrecall.screenshot:
+    <<: *default_app_settings
+  openrecall.nlp:
+    <<: *default_app_settings
+  openrecall.ocr:
+    <<: *default_app_settings
+  openrecall.trayapp:
+    <<: *default_app_settings
+  openrecall.utils:
+    <<: *default_app_settings
+
+  # near libraries
   werkzeug:
     level: INFO
     handlers: [combinedFileHandler,webFileHandler]

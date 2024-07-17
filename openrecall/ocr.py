@@ -1,6 +1,8 @@
 from doctr.models import ocr_predictor
 import logging
+from openrecall.utils import timeit_decorator
 logger = logging.getLogger(__name__)
+logger.debug(f"initializing {__name__}")
 
 ocr = ocr_predictor(
     pretrained=True,
@@ -9,6 +11,7 @@ ocr = ocr_predictor(
 )
 
 
+@timeit_decorator
 def extract_text_from_image(image):
     result = ocr([image])
     text = ""

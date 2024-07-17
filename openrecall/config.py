@@ -1,4 +1,4 @@
-"""Initial configuration of the application. Read the cli parameters, check & set path to 
+"""Initial configuration of the application. Read the cli parameters, check & set path to
 screenshots and database
 
 Usage:
@@ -16,11 +16,12 @@ import os
 import sys
 import argparse
 import logging
+import multiprocessing
 from openrecall.log_config import set_logging_level
 
 # Define a logger for this module
 logger = logging.getLogger(__name__)
-
+logger.debug(f"initializing {__name__}")
 parser = argparse.ArgumentParser(
     description="OpenRecall"
 )
@@ -57,7 +58,7 @@ def get_appdata_folder(app_name="openrecall"):
     Create directory if not exists.
 
     Args:
-        app_name (str, optional): name of the directory for this application. 
+        app_name (str, optional): name of the directory for this application.
         Defaults to "openrecall".
     """
 
@@ -105,19 +106,20 @@ def check_python_version(version=sys.version[:sys.version.find(".", 2)]):
         vinfo = f.readline().strip()
     (major, minor) = make_version_set(vinfo)
     (vmajor, vminor) = make_version_set(version)
-    logging.info(
-        f"Python Version is:{major}.{minor} checking agoinst {vmajor}.{vminor}")
+    logger.info(
+        f"Python Version is:{major}.{minor} checking against {vmajor}.{vminor}")
     if (major, minor) < (vmajor, vminor):
-        print("ERROR: using wrong python version:",
-              version, "please use python ", vinfo)
+        logger.error(
+            f" using wrong python version: {version} please use python {vinfo}")
         sys.exit()
     if (major, minor) > (vmajor, vminor):
-        print("WARNING: using older python version:",
-              version, "please use python ", vinfo)
+        logger.warning(
+            f" using older python version: {version} please use python {vinfo}")
 
 
-check_python_version()
+# makes only sense in the main process...
+if (multiprocessing.current_process().name == "MainProcess"):
+    check_python_version()
 
-print(args.debug)
 set_logging_level(args.debug)
 logger.debug("config loaded")

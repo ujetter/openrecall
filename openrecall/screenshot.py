@@ -10,14 +10,16 @@ from openrecall.config import screenshots_path, args
 from openrecall.database import insert_entry
 from openrecall.nlp import get_embedding
 from openrecall.ocr import extract_text_from_image
-from openrecall.utils import get_active_app_name, get_active_window_title, is_user_active
+from openrecall.utils import get_active_app_name, get_active_window_title, is_user_active, timeit_decorator, logging_decorator
 from openrecall.log_config import log_always
 import logging
 import openrecall.log_config
 logger = logging.getLogger(__name__)
-logger.status(__name__)
+logger.debug(__name__)
 
 
+@timeit_decorator
+@logging_decorator
 def mean_structured_similarity_index(img1, img2, L=255):
     K1, K2 = 0.01, 0.03
     C1, C2 = (K1 * L) ** 2, (K2 * L) ** 2
@@ -38,11 +40,14 @@ def mean_structured_similarity_index(img1, img2, L=255):
     return ssim_index
 
 
+@timeit_decorator
 def is_similar(img1, img2, similarity_threshold=0.9):
     similarity = mean_structured_similarity_index(img1, img2)
     return similarity >= similarity_threshold
 
 
+@timeit_decorator
+@logging_decorator
 def take_screenshots(monitor_number=1):
     screenshots = []
 
@@ -60,6 +65,7 @@ def take_screenshots(monitor_number=1):
     return screenshots
 
 
+@logging_decorator
 def record_screenshots_thread(stop_event):
     # TODO: fix the error from huggingface tokenizers
     import os

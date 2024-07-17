@@ -1,6 +1,35 @@
+import time
+from functools import wraps
+import functools
 import sys
 import logging
 logger = logging.getLogger(__name__)
+logger.debug(f"initializing {__name__}")
+
+
+def timeit_decorator(func):
+    def timeit_wrapper(func, *args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logger.timer(
+            f"{elapsed_time:.2f} : {func.__name__}  ")
+        return result
+
+    """Decorator to time a function."""
+    def wrapper(*args, **kwargs):
+        return timeit_wrapper(func, *args, **kwargs)
+    return wrapper
+
+
+def logging_decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        logger.trace(
+            f"{func.__name__} args: {args} and kwargs: {kwargs}")
+        return func(*args, **kwargs)
+    return wrapper
 
 
 def human_readable_time(timestamp):
@@ -160,19 +189,3 @@ def is_user_active():
 def read_file_to_string(file_path):
     with open(file_path, 'r') as file:
         return file.read()
-
-
-''' Function to use as decorator to run one time a function'''
-
-
-def once(func):
-    called = False
-
-    def wrapper(*args, **kwargs):
-        nonlocal called
-        if not called:
-            func(*args, **kwargs)
-            called = True
-        else:
-            print(f"{func.__name__} has already been executed.")
-    return wrapper
