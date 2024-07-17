@@ -9,13 +9,8 @@ image = Image.open("./images/caret-right-square-fill.png", "r")
 
 def after_click(icon, query):
     if str(query) == "openrecall Search":
-        success = webbrowser.open(
+        webbrowser.open(
             'http://localhost:8082/', new=2, autoraise=True)
-        logger.warning("Success:", success)
-        if success:
-            logger.warning(f"Successfully opened {url} in a new browser tab.")
-        else:
-            logger.warning(f"Failed to open {url}.")
 
     elif str(query) == "openrecall homepage":
         webbrowser.open(

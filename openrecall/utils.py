@@ -160,3 +160,19 @@ def is_user_active():
 def read_file_to_string(file_path):
     with open(file_path, 'r') as file:
         return file.read()
+
+
+''' Function to use as decorator to run one time a function'''
+
+
+def once(func):
+    called = False
+
+    def wrapper(*args, **kwargs):
+        nonlocal called
+        if not called:
+            func(*args, **kwargs)
+            called = True
+        else:
+            print(f"{func.__name__} has already been executed.")
+    return wrapper

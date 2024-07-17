@@ -3,7 +3,7 @@ import logging  # nopep8 pylint: disable=unused-import
 import openrecall.log_config  # nopep8
 from openrecall.log_config import log_always  # nopep8
 
-openrecall.log_config.setup_logging()  # nopep8
+openrecall.log_config.setup_logging_new()  # nopep8
 
 from threading import Thread, Event  # pylint: disable=wrong-import-position
 import multiprocessing
@@ -129,8 +129,16 @@ def signal_handler(sig, frame):
 
 
 if __name__ == "__main__":
+    from flask.logging import default_handler
+
+    app.logger.removeHandler(default_handler)
+    print(app.name)
     create_db()
     log_always(f"Appdata folder: {appdata_folder}")
+    from openrecall.log_config import show_registered_loggers
+    config_logger = logging.getLogger("logging_config")
+    config_logger.info(show_registered_loggers())
+    config_logger = None
     # Start the thread to record screenshots
     # and pass event that stops the thread after ctrl-c is pressed
     # run_as_threads()

@@ -13,7 +13,9 @@ from openrecall.ocr import extract_text_from_image
 from openrecall.utils import get_active_app_name, get_active_window_title, is_user_active
 from openrecall.log_config import log_always
 import logging
+import openrecall.log_config
 logger = logging.getLogger(__name__)
+logger.status(__name__)
 
 
 def mean_structured_similarity_index(img1, img2, L=255):
@@ -65,10 +67,13 @@ def record_screenshots_thread(stop_event):
 
     last_screenshots = take_screenshots()
     while not stop_event.is_set():
+        logger.status("Screenahot?")
+        print("Screenshot?")
         if not is_user_active():
             time.sleep(3)
             continue
-
+        logger.status("screenshot")
+        print("Screenshit")
         screenshots = take_screenshots()
 
         for i, screenshot in enumerate(screenshots):
@@ -100,7 +105,7 @@ def record_screenshots_process():
     # TODO: fix the error from huggingface tokenizers
     import os
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    log_always("screenshot process started")
+    logger.status("Screenshot process started")
 
     last_screenshots = take_screenshots()
     while True:
@@ -109,6 +114,7 @@ def record_screenshots_process():
             continue
 
         screenshots = take_screenshots()
+        logger.debug("Screenshot!!")
 
         for i, screenshot in enumerate(screenshots):
 
@@ -131,5 +137,7 @@ def record_screenshots_process():
                     text, timestamp, embedding, active_app_name, active_window_title
                 )
 
+        logger.debug("Screenshot processing finished!!")
         time.sleep(3)
+
     print("Screenshot thread terminated.")
