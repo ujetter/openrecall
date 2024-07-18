@@ -45,7 +45,7 @@ def timeline():
     # connect to db
     timestamps = get_timestamps()
     number = str(len(timestamps))
-    logging.info(f"/ got {number} timestamps")
+    logger.info(f"/ got {number} timestamps")
     return render_template_string(
         read_file_to_string("./openrecall/templates/timeline.html"),
         timestamps=timestamps,
@@ -55,7 +55,7 @@ def timeline():
 @app.route("/search")
 def search():
     q = request.args.get("q")
-    logging.info(f"/search for {q}")
+    logger.info(f"/search for {q}")
     entries = get_all_entries()
     embeddings = [
         np.frombuffer(entry.embedding, dtype=np.float64) for entry in entries
@@ -80,7 +80,7 @@ def run_as_threads():
     tray_icon_thread = Thread(target=tray_icon.run)
     tray_icon_thread.start()
 
-    logging.status(f"Screenshot thread started, pid={t.native_id}")
+    logger.status(f"Screenshot thread started, pid={t.native_id}")
     app.run(port=8082)
     logger.status("Shutting down the server threads...")
     # App was terminated, shutting down the threads
